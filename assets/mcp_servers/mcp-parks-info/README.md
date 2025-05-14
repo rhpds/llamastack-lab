@@ -40,11 +40,6 @@ podman run -d \
   -e PORT=9000 \
   --network=host\
   
-
-podman run -d --name mcp-parks-info --network=host \
-  -e GOOGLE_MAPS_API_KEY="ENTER_YOUR_TOKEN" \
-  -e MCP_PORT=8006 mcp-parks-info:latest
-
 ```
 # If running to debug, you can quickly run: 
 podman run -e PORT=9000 --network=host -p 9000:9000 mcp-parks-info:latest
