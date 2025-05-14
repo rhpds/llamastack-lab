@@ -1,0 +1,19 @@
+FROM registry.access.redhat.com/ubi9/python-311:latest
+
+# Install runtime dependencies
+RUN pip install mcp["cli"] httpx uvicorn starlette llama_stack_client>=0.1.0
+
+# Set working directory
+WORKDIR /mcp_server
+
+# Copy source code into container
+COPY . /mcp_server
+
+# Default port environment variable
+ENV PORT=8000
+
+# Expose default port
+EXPOSE 8000
+
+# Launch the MCP server using uvicorn, listening on configured port
+ENTRYPOINT ["sh", "-c", "uvicorn server:app --host 0.0.0.0 --port ${PORT}"]
