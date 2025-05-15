@@ -1,6 +1,7 @@
 # Obsidian Rainforest Reserve
 
 **Location:** Washington, USA  
+**coordinates** [47.47849330388556, -120.32329144855476]
 **Established:** 1976  
 **Size:** 189,400 acres  
 **Ecosystems:** Temperate rainforest, volcanic hotsprings, coastal cliffs  

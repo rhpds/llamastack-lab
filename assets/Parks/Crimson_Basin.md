@@ -1,6 +1,7 @@
 # Crimson Basin Desert Preserve
 
 **Location:** Nevada, USA  
+**coordinates** [39.49422066231864, -117.07613301021429]
 **Established:** 1998  
 **Size:** 489,200 acres  
 **Ecosystems:** Sonoran Desert, salt flats, ephemeral wetlands  

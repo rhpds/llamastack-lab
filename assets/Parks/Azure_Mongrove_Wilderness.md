@@ -1,6 +1,7 @@
 # Azure Mangrove Wilderness
 
 **Location:** Florida, USA  
+**coordinates** [27.98714131087106, -81.65730537077836]
 **Established:** 1982  
 **Size:** 142,500 acres  
 **Ecosystems:** Coastal mangroves, seagrass beds, estuarine islands  

@@ -1,6 +1,7 @@
 # Granite Spire Alpine Sanctuary
 
 **Location:** Colorado, USA  
+**coordinates** [38.98001339295099, -105.35652876087735]
 **Established:** 1910  
 **Size:** 316,800 acres  
 **Ecosystems:** Alpine tundra, glacial valleys, subalpine forest  

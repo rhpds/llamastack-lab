@@ -1,6 +1,7 @@
 # Prismatic Painted Prairie
 
 **Location:** South Dakota, USA  
+**coordinates** [43.79648151763754, -100.99218362487979] 
 **Established:** 2005  
 **Size:** 78,900 acres  
 **Ecosystems:** Mixed-grass prairie, badlands, alkaline wetlands  
