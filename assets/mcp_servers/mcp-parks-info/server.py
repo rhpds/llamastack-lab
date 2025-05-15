@@ -1,28 +1,15 @@
-# server.py
-# main ASGI application for the MCP Parks Info server
-
 from starlette.applications import Starlette
-from starlette.routing import Mount, Host
+from starlette.routing import Mount
 from mcp.server.fastmcp import FastMCP
 
 # Create an MCP server
 mcp = FastMCP("mcp-parks-info")
 
-@mcp.tool()
-def greet(name: str) -> str:
-    """Say hello to a person.
-    
-    Examples of user prompts:
-    - "greet John"
-    - "say hello to Alice"
-    """
-    return f"Hello, {name}!"
-
 @mcp.resource("status://health")
 def get_health() -> str:
     """Get the server health status of the MCP Parks Info Server.
-    
-    Examples of user prompts:
+
+    Examples:
     - "health check"
     - "is the server healthy?"
     """
@@ -34,9 +21,7 @@ DEFAULT_SELECTED_MODEL = "meta-llama/Llama-3.2-3B-Instruct"
 DEFAULT_VECTOR_DB_ID = "Our_Parks_DB"
 
 def _execute_park_rag(park_name: str, agent_prompt: str, input_query: str) -> dict:
-    """
-    Internal helper to execute a RAG call for a park tool.
-    """
+    """Internal helper to execute a RAG call for a park tool."""
     try:
         from llama_stack_client import LlamaStackClient, Agent
     except ImportError:
@@ -63,31 +48,39 @@ def _execute_park_rag(park_name: str, agent_prompt: str, input_query: str) -> di
         session_id=session_id,
         stream=False
     )
-    # Serialize to JSON-serializable primitives
-    json_str = response.model_dump_json()
-    return _json.loads(json_str)
+    # json_str = response["output_message"]["content"].model_dump_json()
+    # return _json.loads(json_str)
+    return {"result": response.output_message.content}
 
 @mcp.tool()
 def get_park_location(park_name: str) -> dict:
-    """Get the location of a specified park using retrieval-augmented generation (RAG).
-    
-    Examples of user prompts:
-    - "where is Granite Spire?"
-    - "where is Yellowstone National Park?"
+    """Get the location of a specified park.
+
+    :param park_name: The name of the park (e.g., "Crimson Basin").
+    :type park_name: str
+    :return: A dictionary with the park's location and coordinates
+    :rtype: dict
+
+    Example:
+        >>> get_park_location("Crimson Basin")
     """
     return _execute_park_rag(
         park_name,
         agent_prompt="Use the RAG tool (builtin::rag) to answer the question about the park's location.",
-        input_query=f"What is the location of {park_name}?"
+        input_query=f"What is the location and coordinates of {park_name}?"
     )
 
 @mcp.tool()
 def get_park_cost(park_name: str) -> dict:
-    """Get the cost to enter a specified park using retrieval-augmented generation (RAG).
-    
-    Examples of user prompts:
-    - "what is the cost of entry to Azure Mangrove Wilderness Park?"
-    - "how much does it cost to visit Yosemite National Park?"
+    """Get the cost to enter a specified park.
+
+    :param park_name: The name of the park (e.g., "Azure Mangrove Wilderness Park").
+    :type park_name: str
+    :return: A dictionary with cost information.
+    :rtype: dict
+
+    Example:
+        >>> get_park_cost("Azure Mangrove Wilderness Park")
     """
     return _execute_park_rag(
         park_name,
@@ -97,11 +90,15 @@ def get_park_cost(park_name: str) -> dict:
 
 @mcp.tool()
 def get_park_description(park_name: str) -> dict:
-    """Get a description of a specified park using retrieval-augmented generation (RAG).
-    
-    Examples of user prompts:
-    - "Give me some details about Prismatic Painted Prairie"
-    - "provide a description of Crimson Basin"
+    """Get a description of a specified park.
+
+    :param park_name: The name of the park (e.g., "Prismatic Painted Prairie").
+    :type park_name: str
+    :return: A dictionary with the park's description.
+    :rtype: dict
+
+    Example:
+        >>> get_park_description("Prismatic Painted Prairie")
     """
     return _execute_park_rag(
         park_name,
@@ -111,11 +108,15 @@ def get_park_description(park_name: str) -> dict:
 
 @mcp.tool()
 def get_park_camping_sites(park_name: str) -> dict:
-    """Get the camping sites available at a specified park using retrieval-augmented generation (RAG).
-    
-    Examples of user prompts:
-    - "what camping sites are available in Yosemite National Park?"
-    - "list the camping sites at Grand Canyon National Park"
+    """Get the camping sites available at a specified park.
+
+    :param park_name: The name of the park (e.g., "Grand Canyon National Park").
+    :type park_name: str
+    :return: A dictionary with camping site details.
+    :rtype: dict
+
+    Example:
+        >>> get_park_camping_sites("Grand Canyon National Park")
     """
     return _execute_park_rag(
         park_name,
@@ -125,11 +126,15 @@ def get_park_camping_sites(park_name: str) -> dict:
 
 @mcp.tool()
 def get_park_seasonal_operations(park_name: str) -> dict:
-    """Get the seasonal operations of a specified park using retrieval-augmented generation (RAG).
-    
-    Examples of user prompts:
-    - "what are the seasonal operations for Glacier National Park?"
-    - "when is Acadia National Park open for winter activities?"
+    """Get the seasonal operations of a specified park.
+
+    :param park_name: The name of the park (e.g., "Glacier National Park").
+    :type park_name: str
+    :return: A dictionary with seasonal operation info.
+    :rtype: dict
+
+    Example:
+        >>> get_park_seasonal_operations("Glacier National Park")
     """
     return _execute_park_rag(
         park_name,
@@ -139,11 +144,15 @@ def get_park_seasonal_operations(park_name: str) -> dict:
 
 @mcp.tool()
 def get_park_seasonal_attractions(park_name: str) -> dict:
-    """Get the seasonal attractions of a specified park using retrieval-augmented generation (RAG).
-    
-    Examples of user prompts:
-    - "what seasonal attractions does Zion National Park offer?"
-    - "what events occur during spring at Joshua Tree National Park?"
+    """Get the seasonal attractions of a specified park.
+
+    :param park_name: The name of the park (e.g., "Zion National Park").
+    :type park_name: str
+    :return: A dictionary with seasonal attractions.
+    :rtype: dict
+
+    Example:
+        >>> get_park_seasonal_attractions("Zion National Park")
     """
     return _execute_park_rag(
         park_name,
@@ -153,11 +162,15 @@ def get_park_seasonal_attractions(park_name: str) -> dict:
 
 @mcp.tool()
 def get_park_other_information(park_name: str) -> dict:
-    """Get additional information about a specified park using retrieval-augmented generation (RAG).
-    
-    Examples of user prompts:
-    - "Provide other information for Redwood National Park"
-    - "give me additional facts about Denali National Park"
+    """Get additional information about a specified park.
+
+    :param park_name: The name of the park (e.g., "Denali National Park").
+    :type park_name: str
+    :return: A dictionary with additional park facts.
+    :rtype: dict
+
+    Example:
+        >>> get_park_other_information("Denali National Park")
     """
     return _execute_park_rag(
         park_name,
@@ -167,7 +180,6 @@ def get_park_other_information(park_name: str) -> dict:
 
 app = Starlette(
     routes=[
-        # Mount the MCP server's SSE app at the /mcp path
         Mount('/', app=mcp.sse_app()),
     ]
 )
