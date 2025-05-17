@@ -19,6 +19,7 @@ from llama_stack.distribution.ui.modules.api import llama_stack_api
 class AgentType(enum.Enum):
     REGULAR = "Regular"
     REACT = "ReAct"
+    PARKS = "Parks"
 
 
 def tool_chat_page():
@@ -95,12 +96,14 @@ def tool_chat_page():
         st.subheader("Agent Type")
         agent_type = st.radio(
             label="Select Agent Type",
-            options=["Regular", "ReAct"],
+            options=["Regular", "ReAct", "Parks"],
             on_change=reset_agent,
         )
 
         if agent_type == "ReAct":
             agent_type = AgentType.REACT
+        elif agent_type == "Parks":
+            agent_type = AgentType.PARKS
         else:
             agent_type = AgentType.REGULAR
 
@@ -130,6 +133,37 @@ def tool_chat_page():
             return ReActAgent(
                 client=client,
                 model=model,
+                tools=toolgroup_selection,
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": ReActOutput.model_json_schema(),
+                },
+                sampling_params={"strategy": {"type": "greedy"}, "max_tokens": max_tokens},
+            )
+        elif "agent_type" in st.session_state and st.session_state.agent_type == AgentType.PARKS:
+            print("parks agent created!!")
+            from page.playground.parks_src import utils
+            from page.playground.parks_src import prompt
+  
+            registered_tools = client.tools.list()
+            allowed_toolgroups = toolgroup_selection
+            #print(f"allowed tools groups: ", allowed_toolgroups)
+            # Initialize an empty list to store the dictionaries for each tool
+            allowed_tools_array = []
+
+            for tool in registered_tools:
+                if tool.toolgroup_id in allowed_toolgroups:
+                    #print(tool)
+                    allowed_tools_array.append(tool)
+            #print(f"allowed_tools_array: ", allowed_tools_array)
+
+            custom_react_prompt_with_tools=utils.insert_tools_to_prompt(prompt.custom_react_prompt,allowed_tools_array)
+            print(custom_react_prompt_with_tools)
+#            print(prompt.custom_react_prompt)
+            return ReActAgent(
+                client=client,
+                model=model,
+                instructions=custom_react_prompt_with_tools,
                 tools=toolgroup_selection,
                 response_format={
                     "type": "json_schema",
@@ -350,3 +384,4 @@ def tool_chat_page():
 
 
 tool_chat_page()
+
