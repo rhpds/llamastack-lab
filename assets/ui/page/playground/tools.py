@@ -211,6 +211,8 @@ def tool_chat_page():
         def response_generator(turn_response):
             if st.session_state.get("agent_type") == AgentType.REACT:
                 return _handle_react_response(turn_response)
+            elif st.session_state.get("agent_type") == AgentType.PARKS:
+                return _handle_react_response(turn_response)
             else:
                 return _handle_regular_response(turn_response)
 
